@@ -1,137 +1,76 @@
-# Gradle for Android and Java Final Project
+# BuildItBigger
+An Android app that retrieves jokes from Google Cloud Endpoints module and displays them via an Activity from the Android Library. This app has multiple flavors (free and paid) that uses multiple libraries and Google Could Endpoints. It also has functional tests.
 
-In this project, you will create an app with multiple flavors that uses
-multiple libraries and Google Could Endpoints. The finished app will consist
-of four modules. A Java library that provides jokes, a Google Could Endpoints
-(GCE) project that serves those jokes, an Android Library containing an
-activity for displaying jokes, and an Android app that fetches jokes from the
-GCE module and passes them to the Android Library for display.
+The app consists of four modules:
+* A Java library that provides jokes
+* A Google Could Endpoints (GCE) project that serves those jokes
+* An Android Library containing an activity for displaying jokes
+* An Android app that fetches jokes from the GCE module and passes them to the Android Library for display
 
-## Why this Project
+This is a part of Android Nanodegree project. This project is a part of Udacity Android Nanodegree.
 
-As Android projects grow in complexity, it becomes necessary to customize the
-behavior of the Gradle build tool, allowing automation of repetitive tasks.
-Particularly, factoring functionality into libraries and creating product
-flavors allow for much bigger projects with minimal added complexity.
+## How to use it?
+Download the free or paid app from [here](https://github.com/DevipriyaSarkar/BuildItBigger/releases).
 
-##What Will I Learn?
+## Setup
+1. Clone/download the repository.
+2. Configuring the GCE Module:
+ 1. For running the backend locally - 
+	1. Un-comment the following code in this [file] (app/src/main/java/com/udacity/gradle/builditbigger/EndpointsAsyncTask.java) that says "for local server"  
+	
+		```java  
+		JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        // options for running against local devappserver
+                        // - 10.0.2.2 is localhost's IP address in Android emulator
+                        // - turn off compression when running against local devappserver
+                        .setRootUrl("<your-local-ip-address>:8080/_ah/api/")	// eg. "http://192.168.1.148:8080/_ah/api/"
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+		```
+	2. 	Put your local IP address instead of ```<your-local-ip-address>```. It can be obtained by  
+		On Windows, run ipconfig on command prompt and note down the IPv4 Address <ip-address>.  
+		On Linux, run ifconfig instead.
+	3. Comment that following code in the same [file] (app/src/main/java/com/udacity/gradle/builditbigger/EndpointsAsyncTask.java) that says "after deploying to App Engine"  
+	
+		```java  
+		JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                    .setRootUrl("https://<your-android-app-backend>.appspot.com/_ah/api/");
+		```
+	4. Follow the instructions [here] (https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloEndpoints#11-debugging-the-backend-locally) to run the backend
+ 2. For deploying the backend live to App Engine - 
+	1. Follow the instructions [here] (https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloEndpoints#22-deploying-the-backend-live-to-app-engine)
+	2. Comment the following code in this [file] (app/src/main/java/com/udacity/gradle/builditbigger/EndpointsAsyncTask.java) that says "for local server"  
+	
+		```java  
+		JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        // options for running against local devappserver
+                        // - 10.0.2.2 is localhost's IP address in Android emulator
+                        // - turn off compression when running against local devappserver
+                        .setRootUrl("<your-local-ip-address>:8080/_ah/api/")	// eg. "http://192.168.1.148:8080/_ah/api/"
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+		```
+	3. Un-comment that following code in the same [file] (app/src/main/java/com/udacity/gradle/builditbigger/EndpointsAsyncTask.java) that says "after deploying to App Engine"  
+	
+		```java  
+		JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                    .setRootUrl("https://<your-android-app-backend>.appspot.com/_ah/api/");
+		```
+		where ```<your-android-app-backend>``` corresponds to your own Project ID created in step 1.
+	4.  Update this [file](backend/src/main/webapp/WEB-INF/appengine-web.xml)'s <application> property and replace myApplicationId with same Project ID that you just created in step 1.
+ 
+3. Choose the required build variant and run  
+	![Build Variant Selector](screenshot/screen-build-variant.png)
 
-You will learn the role of Gradle in building Android Apps and how to use Gradle to manage apps of increasing complexity. You'll learn to:
-
-* Add free and paid flavors to an app, and set up your build to share code between them
-* Factor reusable functionality into a Java library
-* Factor reusable Android functionality into an Android library
-* Configure a multi project build to compile your libraries and app
-* Use the Gradle App Engine plugin to deploy a backend
-* Configure an integration test suite that runs against the local App Engine development server
-
-##How Do I Complete this Project?
-
-### Step 0: Starting Point
-
-This is the starting point for the final project, which is provided to you in the [course repository](https://github.com/udacity/ud867/tree/master/FinalProject).
-It contains an activity with a banner ad and a button that purports to tell a
-joke, but actually just complains. The banner ad was set up following the
-instructions here:
-
-https://developers.google.com/mobile-ads-sdk/docs/admob/android/quick-start
-
-You may need to download the Google Repository from the Extras section of the
-Android SDK Manager.
-
-When you can build an deploy this starter code to an emulator, you're ready to
-move on.
-
-### Step 1: Create a Java library
-
-Your first task is to create a Java library that provides jokes. Create a new
-Gradle Java project either using the Android Studio wizard, or by hand. Then
-introduce a project dependency between your app and the new Java Library. If
-you need review, check out demo 4.01 from the course code.
-
-Make the button display a toast showing a joke retrieved from your Java joke
-telling library.
-
-### Step 2: Create an Android Library
-
-Create an Android Library containing an Activity that will display a joke
-passed to it as an intent extra. Wire up project dependencies so that the
-button can now pass the joke from the Java Library to the Android Library.
-
-For review on how to create an Android library, check out demo 4.03. For a
-refresher on intent extras, check out;
-
-http://developer.android.com/guide/components/intents-filters.html
-
-### Step 3: Create GCE Module
-
-This next task will be pretty tricky. Instead of pulling jokes directly from
-our Java library, we'll set up a Google Cloud Endpoints development server,
-and pull our jokes from there. Follow the instructions in the following
-tutorial to add a Google Could Endpoints module to your project:
-
-https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloEndpoints
-
-Introduce a project dependency between your Java library and your GCE module,
-and modify the GCE starter code to pull jokes from your Java library. Create
-an Async task to retrieve jokes. Make the button kick off a task to retrieve a
-joke, then launch the activity from your Android Library to display it.
-
-### Step 4: Add Functional Tests
-
-Add code to test that your Async task successfully retrieves a non-empty
-string. For a refresher on setting up Android tests, check out demo 4.09.
-
-### Step 5: Add a Paid Flavor
-
-Add free and paid product flavors to your app. Remove the ad (and any
-dependencies you can) from the paid flavor.
-
-## Optional Tasks
-
-To exceed expectations, do the following:
-
-### Add Interstitial Ad
-
-Follow these instructions to add an interstitial ad to the free version.
-Display the add after the user hits the button, but before the joke is shown.
-
-https://developers.google.com/mobile-ads-sdk/docs/admob/android/interstitial
-
-### Add Loading Indicator
-
-Add a loading indicator that is shown while the joke is being retrieved and
-disappears when the joke is ready. The following tutorial is a good place to
-start:
-
-http://www.tutorialspoint.com/android/android_loading_spinner.htm
-
-### Configure Test Task
-
-To tie it all together, create a Gradle task that:
-
-1. Launches the GCE local development server
-2. Runs all tests
-3. Shuts the server down again
-
-# Rubric
-
-### Required Components
-
-* Project contains a Java library for supplying jokes
-* Project contains an Android library with an activity that displays jokes passed to it as intent extras.
-* Project contains a Google Cloud Endpoints module that supplies jokes from the Java library. Project loads jokes from GCE module via an async task.
-* Project contains connected tests to verify that the async task is indeed loading jokes.
-* Project contains paid/free flavors. The paid flavor has no ads, and no unnecessary dependencies.
-
-### Required Behavior
-
-* App retrieves jokes from Google Cloud Endpoints module and displays them via an Activity from the Android Library.
-
-### Optional Components
-
-To receive "exceeds specifications", your app must fully implement all of the following items.
-
-* The free app variant displays interstitial ads between the main activity and the joke-displaying activity.
-* The app displays a loading indicator while the joke is being fetched from the server.
-* The root build.gradle file contains a task that will start up the GCE development server, run all Android tests, then shutdown the development server.
+## License
+The content of this repository is licensed under [MIT LICENSE](LICENSE.MD).
