@@ -1,4 +1,4 @@
-package com.udacity.gradle.builditbigger.flavors.paid;
+package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
 import android.os.Bundle;

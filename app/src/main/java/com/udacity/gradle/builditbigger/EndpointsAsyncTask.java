@@ -32,7 +32,7 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
                         // options for running against local devappserver
                         // - 10.0.2.2 is localhost's IP address in Android emulator
                         // - turn off compression when running against local devappserver
-                        .setRootUrl("http://192.168.1.148:8080/_ah/api/")
+                        .setRootUrl("<your-local-ip-address>:8080/_ah/api/")	// eg. "http://192.168.1.148:8080/_ah/api/"
                         .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                             @Override
                             public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
@@ -41,7 +41,7 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
                         });*/
             //after deploying to App Engine
             JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                    .setRootUrl("https://jokebuilditbigger.appspot.com/_ah/api/");
+                    .setRootUrl("https://<your-android-app-backend>.appspot.com/_ah/api/");
             // end options for devappserver
 
             myApiService = builder.build();
